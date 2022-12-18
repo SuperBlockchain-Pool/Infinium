@@ -189,7 +189,7 @@ constexpr PublicKey CHECKPOINT_PUBLIC_KEYS_STAGENET[] = {
     common::pfh<PublicKey>("62020c71bbf2447ee588b28c15430434f2ceac8443c40b6e48b627e437110981")};
 
 const char *const SEED_NODES[] = {
-    "45.80.149.111:27854", "135.181.62.60:27854", "8.210.48.142:27854", "144.217.29.34:27854"};
+    "138.124.183.11:27854", "185.74.222.212:27854"};
 const char *const SEED_NODES_STAGENET[] = {
     "207.246.127.160:10080", "108.61.174.232:10080", "45.32.156.183:10080", "45.76.29.96:10080"};
 // testnet will have no seed nodes
