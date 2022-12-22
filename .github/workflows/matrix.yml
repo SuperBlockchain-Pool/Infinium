@@ -74,6 +74,7 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
+          ls
           cd build/bin
           TARGETS="infiniumd walletd minerd tests"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
