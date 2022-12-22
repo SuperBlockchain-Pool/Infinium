@@ -92,7 +92,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/${{ steps.before_deploy.outputs.file_name }}
+          asset_path: ./bin/${{ steps.before_deploy.outputs.file_name }}
           asset_name: ${{ steps.before_deploy.outputs.file_name }}
           asset_content_type: application/gzip
 
@@ -101,4 +101,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.before_deploy.outputs.artifact_name }}
-          path: ./build/src/${{ steps.before_deploy.outputs.binary_path }}
+          path: ./bin/${{ steps.before_deploy.outputs.binary_path }}
