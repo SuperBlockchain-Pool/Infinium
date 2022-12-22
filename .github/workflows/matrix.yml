@@ -80,7 +80,6 @@ jobs:
           rm -rf Infinium-${TAG}
           mkdir Infinium-${TAG}
           cp ${TARGETS} Infinium-${TAG}/
-          cp ../../LICENSE Infinium-${TAG}/
           tar cvfz Infinium-${TAG}-${LABEL}.tar.gz Infinium-${TAG}/
           echo ::set-output name=binary_path::Infinium-${TAG}
           echo ::set-output name=artifact_name::Infinium-${TAG}-${LABEL}
