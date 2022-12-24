@@ -145,3 +145,10 @@ jobs:
             mkdir build
             cd build
             cmake -G "Visual Studio 16 2019" -A x64 .. -DBOOST_ROOT=C:/local/boost_1_78_0
+        # Build for Windows
+        - name: Build
+          run: |
+            $env:CLCACHE_DIR = "$env:GITHUB_WORKSPACE\clcache"
+            $env:PATH = "$env:PATH;$env:MSBUILD_PATH"
+            cd build
+            MSBuild infinium.sln /p:Configuration=Release /p:PlatformToolset=v142 /m
