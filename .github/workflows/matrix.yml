@@ -144,7 +144,7 @@ jobs:
           run: |
             mkdir build
             cd build
-            cmake -G "Visual Studio 15 2017 Win64" .. -DBOOST_ROOT=C:/local/boost_1_78_0
+            cmake -G "Visual Studio 16 2019" -A x64 .. -DBOOST_ROOT=C:/local/boost_1_78_0
         # Build for Windows
         - name: Build
           run: |
