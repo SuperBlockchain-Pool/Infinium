@@ -102,3 +102,46 @@ jobs:
         with:
           name: ${{ steps.before_deploy.outputs.artifact_name }}
           path: ./bin/${{ steps.before_deploy.outputs.binary_path }}
+
+          
+  windows_build:
+      name: Windows
+      runs-on: windows-2019
+      env:
+        MSBUILD_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/MSBuild/Current/Bin"
+        LABEL: windows
+      steps:
+        - uses: actions/checkout@v2
+
+        - name: Setup clcache
+          run: pip install clcache
+
+        - name: Retrieve clcache
+          uses: actions/cache@v1
+          with:
+            path: clcache
+            key: clcache-windows
+
+        - name: Install OpenSSL
+          run: choco install openssl
+          
+        - name: Download LMDB
+          run: |
+            cd ../
+            git clone https://github.com/Infinium-dev/lmdb.git
+
+        # Install boost
+        - name: Install Boost 1.78.0
+          run: |
+            $link = "https://boost.teeks99.com/bin/1.78.0/boost_1_78_0-msvc-14.2-64.exe"
+            $path = "C:\boost.exe"
+            [Net.WebClient]::new().DownloadFile($link, $path)
+            Start-Process C:\boost.exe -ArgumentList "/DIR=C:\local\boost_1_78_0","/VERYSILENT" -Wait
+            Get-ChildItem C:\local\boost_1_78_0
+        
+        # Configure project with cmake
+        - name: Configure
+          run: |
+            mkdir build
+            cd build
+            cmake -G "Visual Studio 16 2019" -A x64 .. -DBOOST_ROOT=C:/local/boost_1_78_0
