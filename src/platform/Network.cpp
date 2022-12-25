@@ -320,7 +320,7 @@ static_assert(BOOST_VERSION / 100000 == 1 && ((BOOST_VERSION / 100) % 1000) >= 6
 
 #ifdef _WIN32
 #include <Wincrypt.h>
-#pragma comment(lib, "libssl.lib")     // OpenSSL library
+   // OpenSSL library
 #pragma comment(lib, "crypt32.lib")    // Windows SDK dependency of OpenSSL
 
 static void add_system_root_certs(ssl::context &ctx) {
