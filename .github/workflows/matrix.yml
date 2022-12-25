@@ -164,7 +164,7 @@ jobs:
           run: |
             if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
             cd bin/Release
-            TARGETS="infiniumd walletd minerd tests"
+            TARGETS="infiniumd.exe walletd.exe minerd.exe tests.exe"
             if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
             rm -rf Infinium-${TAG}
             mkdir Infinium-${TAG}
