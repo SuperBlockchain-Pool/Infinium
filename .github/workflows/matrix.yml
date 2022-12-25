@@ -162,14 +162,18 @@ jobs:
           env:
             COMMIT_SHA: ${{ github.sha }}
           run: |
-            ls
             if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
-            cp bin/Release/* Release
-            mv Release Infinium-${TAG}/
+            cd bin/Release
+            TARGETS="infiniumd walletd minerd tests"
+            if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
+            rm -rf Infinium-${TAG}
+            mkdir Infinium-${TAG}
+            cp ${TARGETS} Infinium-${TAG}/
             tar cvfz Infinium-${TAG}-${LABEL}.tar.gz Infinium-${TAG}/
             echo ::set-output name=binary_path::Infinium-${TAG}
             echo ::set-output name=artifact_name::Infinium-${TAG}-${LABEL}
             echo ::set-output name=file_name::Infinium-${TAG}-${LABEL}.tar.gz
+          
         # Upload to GH Release
         - name: Upload to GH Release
           if: github.event_name == 'release' && matrix.deployable
