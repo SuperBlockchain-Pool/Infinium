@@ -163,7 +163,7 @@ jobs:
             COMMIT_SHA: ${{ github.sha }}
           run: |
             if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
-            cp ../Infinium/bin/Release/* Release
+            cp bin/Release/* Release
             mv Release Infinium-${TAG}/
             tar cvfz Infinium-${TAG}-${LABEL}.tar.gz Infinium-${TAG}/
             echo ::set-output name=binary_path::Infinium-${TAG}
