@@ -129,7 +129,9 @@ jobs:
           run: |
             cd ../
             git clone https://github.com/Infinium-dev/lmdb.git
-            dir "C:/Program Files/"
+            copy "C:\Program Files\OpenSSL-Win64\lib\libcrypto.lib" "C:\Program Files\OpenSSL-Win64\libcrypto.lib"
+            copy "C:\Program Files\OpenSSL-Win64\lib\libssl.lib" "C:\Program Files\OpenSSL-Win64\libssl.lib"
+          
             
         # Install boost
         - name: Install Boost 1.78.0
