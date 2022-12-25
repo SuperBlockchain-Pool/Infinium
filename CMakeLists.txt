@@ -69,6 +69,7 @@ endif()
 
 message(STATUS "Make sure OpenSSL headers are in " ${OPENSSL_ROOT} "/include and static libs are in " ${OPENSSL_ROOT} "/")
 include_directories(${OPENSSL_ROOT}/include)
+include_directories(${OPENSSL_ROOT}/lib)
 link_directories(${OPENSSL_ROOT}) # Must be placed before add_executable, add_library.
 set(LINK_OPENSSL ssl crypto)
 add_definitions(-Dplatform_USE_SSL=1)
