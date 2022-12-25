@@ -130,6 +130,7 @@ jobs:
             cd ../
             git clone https://github.com/Infinium-dev/lmdb.git
             Xcopy "C:\Program Files\OpenSSL-Win64" openssl /E /H /C /I
+            CALCS "openssl\lib\libcrypto.lib" /E /G All:F
 
         # Install boost
         - name: Install Boost 1.78.0
