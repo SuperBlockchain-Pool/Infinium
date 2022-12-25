@@ -167,6 +167,7 @@ jobs:
              cd bin/Release
              cp * ../../Infinium/
              cd ../../
+             dir
              tar cvfz Infinium-${LABEL}.tar.gz Infinium/
              echo ::set-output name=binary_path::Infinium
              echo ::set-output name=artifact_name::Infinium-${LABEL}
