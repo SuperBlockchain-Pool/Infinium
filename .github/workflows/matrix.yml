@@ -163,6 +163,8 @@ jobs:
           env:
             COMMIT_SHA: ${{ github.sha }}
           run: |
+           dir bin
+           dir bin/Release
            cd bin/Release
            TARGETS="infiniumd.exe walletd.exe minerd.exe tests.exe"
            then strip ${TARGETS}
