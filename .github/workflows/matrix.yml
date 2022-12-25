@@ -106,9 +106,9 @@ jobs:
           
   windows_build:
       name: Windows
-      runs-on: windows-2016
+      runs-on: windows-2019
       env:
-        MSBUILD_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/2017/Enterprise/MSBuild/Current/Bin"
+        MSBUILD_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/MSBuild/Current/Bin"
         LABEL: windows
       steps:
         - uses: actions/checkout@v2
@@ -145,7 +145,7 @@ jobs:
           run: |
             mkdir build
             cd build
-            cmake -G "Visual Studio 15 2017 Win64" -A x64 .. -DBOOST_ROOT=C:/local/boost_1_78_0
+            cmake -G "Visual Studio 16 2019" -A x64 .. -DBOOST_ROOT=C:/local/boost_1_78_0
         # Build for Windows
         - name: Build
           run: |
