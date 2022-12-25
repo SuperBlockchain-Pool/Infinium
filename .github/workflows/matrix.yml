@@ -163,17 +163,16 @@ jobs:
           env:
             COMMIT_SHA: ${{ github.sha }}
           run: |
-           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
            cd bin/Release
            TARGETS="infiniumd.exe walletd.exe minerd.exe tests.exe"
            if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
-           rm -rf Infinium-${TAG}
-           mkdir Infinium-${TAG}
-           cp ${TARGETS} Infinium-${TAG}/
-           tar cvfz Infinium-${TAG}-${LABEL}.tar.gz Infinium-${TAG}/
-           echo ::set-output name=binary_path::Infinium-${TAG}
-           echo ::set-output name=artifact_name::Infinium-${TAG}-${LABEL}
-           echo ::set-output name=file_name::Infinium-${TAG}-${LABEL}.tar.gz
+           rm -rf Infinium
+           mkdir Infinium
+           cp ${TARGETS} Infinium/
+           tar cvfz Infinium-${LABEL}.tar.gz Infinium/
+           echo ::set-output name=binary_path::Infinium
+           echo ::set-output name=artifact_name::Infinium-${LABEL}
+           echo ::set-output name=file_name::Infinium-${LABEL}.tar.gz
           
         # Upload to GH Release
         - name: Upload to GH Release
