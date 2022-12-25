@@ -165,7 +165,7 @@ jobs:
           run: |
            cd bin/Release
            TARGETS="infiniumd.exe walletd.exe minerd.exe tests.exe"
-           if ("${LABEL}" != "aarch64"); then strip ${TARGETS}; fi
+           then strip ${TARGETS}
            rm -rf Infinium
            mkdir Infinium
            cp ${TARGETS} Infinium/
