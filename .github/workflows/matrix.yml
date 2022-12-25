@@ -163,18 +163,14 @@ jobs:
           env:
             COMMIT_SHA: ${{ github.sha }}
           run: |
-           dir bin
-           dir bin/Release
-           cd bin/Release
-           TARGETS="infiniumd.exe walletd.exe minerd.exe tests.exe"
-           then strip ${TARGETS}
-           rm -rf Infinium
-           mkdir Infinium
-           cp ${TARGETS} Infinium/
-           tar cvfz Infinium-${LABEL}.tar.gz Infinium/
-           echo ::set-output name=binary_path::Infinium
-           echo ::set-output name=artifact_name::Infinium-${LABEL}
-           echo ::set-output name=file_name::Infinium-${LABEL}.tar.gz
+             mkdir Infinium
+             cd bin/Release
+             cp * ../../Infinium/
+             cd ../../
+             tar cvfz Infinium-${LABEL}.tar.gz Infinium/
+             echo ::set-output name=binary_path::Infinium
+             echo ::set-output name=artifact_name::Infinium-${LABEL}
+             echo ::set-output name=file_name::Infinium-${LABEL}.tar.gz
           
         # Upload to GH Release
         - name: Upload to GH Release
