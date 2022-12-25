@@ -162,6 +162,7 @@ jobs:
           env:
             COMMIT_SHA: ${{ github.sha }}
           run: |
+            ls
             if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
             cp bin/Release/* Release
             mv Release Infinium-${TAG}/
