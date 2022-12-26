@@ -184,7 +184,7 @@ jobs:
            upload_url: ${{ github.event.release.upload_url }}
            asset_path: ./bin/Release/${{ steps.before_deploy.outputs.file_name }}
            asset_name: ${{ steps.before_deploy.outputs.file_name }}
-           asset_content_type: application/gzip
+           asset_content_type: application/zip
     # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
