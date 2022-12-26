@@ -165,7 +165,6 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         shell: bash  
         run: |
-          if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           mkdir Infinium
           dir
           cd bin/Release
