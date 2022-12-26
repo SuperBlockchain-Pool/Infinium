@@ -182,7 +182,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
            upload_url: ${{ github.event.release.upload_url }}
-           asset_path: ./${{ steps.before_deploy.outputs.file_name }}
+           asset_path: ./bin/Release/${{ steps.before_deploy.outputs.file_name }}
            asset_name: ${{ steps.before_deploy.outputs.file_name }}
            asset_content_type: application/gzip
     # Upload to GH Actions Artifacts
@@ -190,4 +190,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
            name: ${{ steps.before_deploy.outputs.artifact_name }}
-           path: ./${{ steps.before_deploy.outputs.binary_path }}
+           path: ./bin/Release/${{ steps.before_deploy.outputs.binary_path }}
