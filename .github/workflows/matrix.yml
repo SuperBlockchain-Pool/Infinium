@@ -173,7 +173,7 @@ jobs:
           cp * ../../Infinium/
           cd ../../
           dir
-          7z Infinium-${LABEL}.tar.gz Infinium/
+          7z a Infinium-${LABEL}.tar.gz Infinium/
           echo ::set-output name=binary_path::Infinium-${LABEL}
           echo ::set-output name=artifact_name::Infinium-${LABEL}
           echo ::set-output name=file_name::Infinium-${LABEL}.tar.gz
