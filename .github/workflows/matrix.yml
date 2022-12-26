@@ -165,18 +165,15 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         shell: bash  
         run: |
-          mkdir Infinium
-          dir
+          if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           cd bin/Release
-          dir
-          cp * ../../Infinium/
-          cd ../../
-          dir
-          7z a Infinium-${LABEL}.tar.gz Infinium/
-          echo ::set-output name=binary_path::Infinium-${LABEL}
-          echo ::set-output name=artifact_name::Infinium-${LABEL}
-          echo ::set-output name=file_name::Infinium-${LABEL}.tar.gz
-          
+          rm -rf Infinium-${TAG}
+          mkdir Infinium-${TAG}
+          cp *.exe Infinium-${TAG}/
+          7z a Infinium-${TAG}-${LABEL}.zip Infinium-${TAG}/
+          echo ::set-output name=binary_path::Infinium-${TAG}
+          echo ::set-output name=artifact_name::Infinium-${TAG}-${LABEL}
+          echo ::set-output name=file_name::Infinium-${TAG}-${LABEL}.zip          
     # Upload to GH Release
       - name: Upload to GH Release
         if: github.event_name == 'release' && matrix.deployable
