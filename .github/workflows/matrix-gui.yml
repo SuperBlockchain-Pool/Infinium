@@ -55,9 +55,9 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |
-          curl -OL https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.bz2
-          tar -xjf boost_1_86_0.tar.bz2
-          cd boost_1_86_0
+          curl -OL https://archives.boost.io/release/1.92.0/source/boost_1_92_0.tar.bz2
+          tar -xjf boost_1_92_0.tar.bz2
+          cd boost_1_92_0
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
@@ -103,7 +103,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/Infinium/Infinium/boost_1_86_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Infinium/Infinium/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/Infinium/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/Infinium/Infinium/boost_1_92_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Infinium/Infinium/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/Infinium/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
       
       # Build for linux
       - name: Build
