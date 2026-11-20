@@ -510,14 +510,14 @@ jobs:
     name: Windows
     runs-on: windows-latest
     env:
-      MSBUILD_PATH: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin"
+      MSBUILD_PATH: "C:/Program Files/Microsoft Visual Studio/18/Enterprise/MSBuild/Current/Bin"
       LABEL: windows
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Checkout repository and submodules  
       - name: Checkout repository and submodules
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -549,7 +549,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G "Visual Studio 17 2022" -A x64 -T v142,host=x64 .. -DBUILD_GUI=ON -D CMAKE_PREFIX_PATH=D:\a\Infinium\Qt\5.12.12\msvc2017_64 -D BOOST_ROOT=C:/local/boost_1_86_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_86_0/lib64-msvc-14.2"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
+          cmake -G "Visual Studio 18 2026" -A x64 -T v142,host=x64 .. -DBUILD_GUI=ON -D CMAKE_PREFIX_PATH=D:\a\Infinium\Qt\5.12.12\msvc2017_64 -D BOOST_ROOT=C:/local/boost_1_86_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_86_0/lib64-msvc-14.2"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
      
       # Build for Windows
       - name: Build
@@ -557,7 +557,7 @@ jobs:
           $env:CLCACHE_DIR = "$env:GITHUB_WORKSPACE\clcache"
           $env:PATH = "$env:PATH;$env:MSBUILD_PATH"
           cd build
-          MSBuild infinium.sln /p:Configuration=Release /t:Build
+          MSBuild infinium.slnx /p:Configuration=Release /t:Build
 
       # Prepare for deploy
       - name: Prepare for Deploy
