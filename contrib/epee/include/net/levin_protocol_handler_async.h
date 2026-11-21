@@ -207,8 +207,7 @@ public:
       if(!m_cancel_timer_called)
       {
         m_cancel_timer_called = true;
-        boost::system::error_code ignored_ec;
-        m_timer_cancelled = 1 == m_timer.cancel(ignored_ec);
+        m_timer_cancelled = 1 == m_timer.cancel();
       }
       return m_timer_cancelled;
     }

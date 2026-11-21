@@ -140,7 +140,7 @@ using std::pair;
 using std::unique_ptr;
 using std::make_shared;
 
-#define  TEST_ERR(err,connectFunc) if (err) {net::post(net::detail::bind_handler(connectFunc, err));return;}
+#define  TEST_ERR(err,connectFunc) if (err) {net::post(net::system_executor(), boost::bind(connectFunc, err));return;}
 
 class Util {
 private:

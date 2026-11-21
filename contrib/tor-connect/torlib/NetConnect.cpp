@@ -84,7 +84,7 @@ void NetConnect::Handshake(ConnectFunction connectFunc, const sys::error_code& e
 	BOOST_LOG_TRIVIAL(debug) << "NetConnect::Handshake";
 	TEST_ERR(err, connectFunc);
 	BOOST_LOG_TRIVIAL(debug) << "NetConnect::Handshake  Handshake OK ";
-	net::post(net::detail::bind_handler(connectFunc, err));
+	net::post(net::system_executor(), boost::bind(connectFunc, err));
 }
 
 void NetConnect::SendVersion(ConnectFunction connectFunc)
@@ -135,14 +135,14 @@ void NetConnect::ReadVersionComplete(ConnectFunction connectFunc, const sys::err
 	BOOST_LOG_TRIVIAL(debug) << "ReadVersionComplete::cell_command=" << static_cast<unsigned int>(header_data[2]);
 	if (header_data[2] != cell_command::versions) {
 		BOOST_LOG_TRIVIAL(error) << "Received strange version response cell.";		
-		net::post(net::detail::bind_handler(connectFunc, net::error::bad_descriptor));
+		net::post(net::system_executor(), boost::bind(connectFunc, net::error::bad_descriptor));
 		return;
 	}	
 	u16 len = Util::BigEndianArrayToShort(header_data + 3);
 	BOOST_LOG_TRIVIAL(debug) << "ReadVersionComplete::len=" << len;
 	if (len > 24) {
 		BOOST_LOG_TRIVIAL(error) << "Version response length is strangely long.";
-		net::post(net::detail::bind_handler(connectFunc, net::error::bad_descriptor));
+		net::post(net::system_executor(), boost::bind(connectFunc, net::error::bad_descriptor));
 		return;
 	}
 	net::async_read(socket, response,
@@ -236,7 +236,7 @@ void NetConnect::ReadNetInfoComplete(int len, ConnectFunction connectFunc, const
 	std::string v_header(std::istreambuf_iterator<char>(response_stream), eos);
 	unc* header_data = reinterpret_cast<unc*>(const_cast<char*>(v_header.c_str()));
 	Util::HexDump(header_data, v_header.length());
-	net::post(net::detail::bind_handler(connectFunc, err));	
+	net::post(net::system_executor(), boost::bind(connectFunc, err));	
 }
 
 void NetConnect::Close() {	
@@ -275,7 +275,7 @@ void NetConnect::WriteCell(Cell& cell, ConnectFunction connectFunc) {
 void NetConnect::WriteCellComplete(ConnectFunction connectFunc, const sys::error_code& err) {
 	BOOST_LOG_TRIVIAL(debug) << "NetConnect::WriteCellComplete";
 	TEST_ERR(err, connectFunc);
-	net::post(net::detail::bind_handler(connectFunc, err));
+	net::post(net::system_executor(), boost::bind(connectFunc, err));
 }
 
 void NetConnect::ReadCell(shared_ptr<Cell> cell, ConnectFunction connectFunc) {
@@ -311,7 +311,7 @@ void NetConnect::ReadCellComplete(ConnectFunction connectFunc, shared_ptr<Cell> 
 	Util::HexDump(cell->GetBuffer(), cell->GetBufferSize());
 	BOOST_LOG_TRIVIAL(debug) << "------------------------------------------------------";	
 	
-	net::post(net::detail::bind_handler(connectFunc, err));	
+	net::post(net::system_executor(), boost::bind(connectFunc, err));	
 }
 void NetConnect::HexDumpResponse()
 {

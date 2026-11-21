@@ -262,7 +262,7 @@ void TorLib::ReadStreamComplete(int n_node, ConnectFunction connectFunc,
 
   data_result.clear();
   data_result.append(reinterpret_cast<char const*>(relay_node->GetRelayPayload()), relay_node->GetRelayPayloadLength());
-  net::post(net::detail::bind_handler(connectFunc, err));
+  net::post(net::system_executor(), boost::bind(connectFunc, err));
 }
 bool TorLib::CreateStream(int n_node, u16 id_stream, string host, int port, int timeout, ConnectFunction connectFunc)
 {
@@ -310,7 +310,7 @@ void TorLib::CreateStreamComplete(int n_node, ConnectFunction connectFunc,
   Util::HexDump(relay_node->GetBuffer(), relay_node->GetBufferSize());
   BOOST_LOG_TRIVIAL(debug) << "-----------------------------------";
 
-  net::post(net::detail::bind_handler(connectFunc, err));
+  net::post(net::system_executor(), boost::bind(connectFunc, err));
 }
 
 bool TorLib::ConnectToNode(int n_node, int search_port)
@@ -526,7 +526,7 @@ void TorLib::CreateExtendNtorComplete(int n_node, ConnectFunction connectFunc,
   sys::error_code loc_err;
   if (onion_routers[n_node]->GeneratKeyMaterial(*relay_node)) loc_err = err;
   else loc_err = net::error::bad_descriptor;
-  net::post(net::detail::bind_handler(connectFunc, loc_err));
+  net::post(net::system_executor(), boost::bind(connectFunc, loc_err));
 }
 
 void TorLib::ReadCNtor(int n_node, ConnectFunction connectFunc,
@@ -548,7 +548,7 @@ void TorLib::CreateNtorComplete(int n_node, ConnectFunction connectFunc,
   sys::error_code loc_err;
   if (onion_routers[n_node]->GeneratKeyMaterial(node)) loc_err = err;
   else loc_err = net::error::bad_descriptor;
-  net::post(net::detail::bind_handler(connectFunc, loc_err));
+  net::post(net::system_executor(), boost::bind(connectFunc, loc_err));
 }
 
 
