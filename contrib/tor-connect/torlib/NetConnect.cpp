@@ -31,7 +31,7 @@
 #include "NetConnect.h"
 
 
-NetConnect::NetConnect(net::io_service& io_service, ssl::context& context)
+NetConnect::NetConnect(net::io_context& io_service, ssl::context& context)
 	: _resolver(io_service), socket(io_service, context)
 {
 	BOOST_LOG_TRIVIAL(debug) << "NetConnect::created";
@@ -40,13 +40,13 @@ NetConnect::NetConnect(net::io_service& io_service, ssl::context& context)
 
 void NetConnect::Connect(const string& host, int port, ConnectFunction connectFunc) {
 	BOOST_LOG_TRIVIAL(debug) << "NetConnect::Connect host="<< host<< " port="<< port;
-	tcp::endpoint ep(net::ip::address::from_string(host.c_str()), port);
+	tcp::endpoint ep(net::ip::make_address(host.c_str()), port);
 	_resolver.async_resolve(ep,
-		boost::bind(&NetConnect::ResolvedComplete, this, connectFunc, pl::iterator, pl::error));
+		boost::bind(&NetConnect::ResolvedComplete, this, connectFunc, pl::results, pl::error));
 }
 
 void NetConnect::ResolvedComplete(ConnectFunction connectFunc, 
-	tcp::resolver::iterator endpoint_iter, const sys::error_code& err)
+	tcp::resolver::results_type endpoint_iter, const sys::error_code& err)
 {
 	BOOST_LOG_TRIVIAL(debug) << "NetConnect::ResolvedComplete";		
 	TEST_ERR(err, connectFunc);
@@ -247,7 +247,7 @@ tcp::endpoint NetConnect::GetLocalEndpoint() {
 	return socket.lowest_layer().local_endpoint();
 }
 long NetConnect::GetEndpointLong() {
-	return socket.lowest_layer().remote_endpoint().address().to_v4().to_ulong();
+	return socket.lowest_layer().remote_endpoint().address().to_v4().to_uint();
 }
 
 NetConnect::~NetConnect() {

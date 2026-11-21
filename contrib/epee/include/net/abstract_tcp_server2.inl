@@ -32,7 +32,7 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/chrono.hpp>
 #include <boost/utility/value_init.hpp>
-#include <boost/asio/deadline_timer.hpp>
+#include <boost/asio/steady_timer.hpp>
 #include "misc_language.h"
 #include "warnings.h"
 
@@ -45,7 +45,7 @@ namespace net_utils {
 DISABLE_VS_WARNINGS(4355)
 
 template<class t_protocol_handler>
-connection<t_protocol_handler>::connection(boost::asio::io_service& io_service,
+connection<t_protocol_handler>::connection(boost::asio::io_context& io_service,
                                            typename t_protocol_handler::config_type& config, volatile uint32_t& sock_count, i_connection_filter*& pfilter)
     : m_rio_service(io_service),
       strand_(io_service),
@@ -121,7 +121,7 @@ bool connection<t_protocol_handler>::start(bool is_income, bool is_multithreaded
   CHECK_AND_NO_ASSERT_MES(!ec, false, "Failed to get local endpoint: " << ec.message() << ':' << ec.value());
 
   context  = boost::value_initialized<t_connection_context>();
-  long ip_ = boost::asio::detail::socket_ops::host_to_network_long(remote_ep.address().to_v4().to_ulong());
+  long ip_ = boost::asio::detail::socket_ops::host_to_network_long(remote_ep.address().to_v4().to_uint());
 
   context.set_details(boost::uuids::random_generator()(), ip_, remote_ep.port(), is_income);
   context.m_last_send = context.m_last_recv = time(NULL);
@@ -137,7 +137,7 @@ bool connection<t_protocol_handler>::start(bool is_income, bool is_multithreaded
   m_protocol_handler.after_init_connection();
 
   socket_.async_read_some(boost::asio::buffer(buffer_),
-                          strand_.wrap(
+                          boost::asio::bind_executor(strand_,
                               boost::bind(&connection<t_protocol_handler>::handle_read, self,
                                           boost::asio::placeholders::error,
                                           boost::asio::placeholders::bytes_transferred)));
@@ -157,13 +157,13 @@ bool connection<t_protocol_handler>::request_callback()
   if(!self)
     return false;
 
-  strand_.post(boost::bind(&connection<t_protocol_handler>::call_back_starter, self));
+  boost::asio::post(strand_, boost::bind(&connection<t_protocol_handler>::call_back_starter, self));
   CATCH_ENTRY_L0("connection<t_protocol_handler>::request_callback()", false);
   return true;
 }
 //---------------------------------------------------------------------------------
 template<class t_protocol_handler>
-boost::asio::io_service& connection<t_protocol_handler>::get_io_service()
+boost::asio::io_context& connection<t_protocol_handler>::get_io_service()
 {
   return m_rio_service;
 }
@@ -238,7 +238,7 @@ void connection<t_protocol_handler>::handle_read(const boost::system::error_code
     }
     else {
       socket_.async_read_some(boost::asio::buffer(buffer_),
-                              strand_.wrap(
+                              boost::asio::bind_executor(strand_,
                                   boost::bind(&connection<t_protocol_handler>::handle_read, connection<t_protocol_handler>::shared_from_this(),
                                               boost::asio::placeholders::error,
                                               boost::asio::placeholders::bytes_transferred)));
@@ -419,7 +419,7 @@ void connection<t_protocol_handler>::handle_write(const boost::system::error_cod
 /************************************************************************/
 template<class t_protocol_handler>
 boosted_tcp_server<t_protocol_handler>::boosted_tcp_server()
-    : m_io_service_local_instance(new boost::asio::io_service()),
+    : m_io_service_local_instance(new boost::asio::io_context()),
       io_service_(*m_io_service_local_instance.get()),
       acceptor_(io_service_),
       new_connection_(new connection<t_protocol_handler>(io_service_, m_config, m_sockets_count, m_pfilter)),
@@ -429,7 +429,7 @@ boosted_tcp_server<t_protocol_handler>::boosted_tcp_server()
 }
 
 template<class t_protocol_handler>
-boosted_tcp_server<t_protocol_handler>::boosted_tcp_server(boost::asio::io_service& extarnal_io_service)
+boosted_tcp_server<t_protocol_handler>::boosted_tcp_server(boost::asio::io_context& extarnal_io_service)
     : io_service_(extarnal_io_service),
       acceptor_(io_service_),
       new_connection_(new connection<t_protocol_handler>(io_service_, m_config, m_sockets_count, m_pfilter)),
@@ -458,8 +458,7 @@ bool boosted_tcp_server<t_protocol_handler>::init_server(uint32_t port, const st
   m_address          = address;
   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
   boost::asio::ip::tcp::resolver resolver(io_service_);
-  boost::asio::ip::tcp::resolver::query query(address, boost::lexical_cast<std::string>(port));
-  boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(query);
+  boost::asio::ip::tcp::endpoint endpoint = resolver.resolve(address, boost::lexical_cast<std::string>(port)).begin()->endpoint();
   acceptor_.open(endpoint.protocol());
   acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
   acceptor_.bind(endpoint);
@@ -652,21 +651,19 @@ bool boosted_tcp_server<t_protocol_handler>::connect(const std::string& adr, con
 
   //////////////////////////////////////////////////////////////////////////
   boost::asio::ip::tcp::resolver resolver(io_service_);
-  boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), adr, port);
-  boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
-  boost::asio::ip::tcp::resolver::iterator end;
-  if(iterator == end) {
+  boost::asio::ip::tcp::resolver::results_type resolved = resolver.resolve(boost::asio::ip::tcp::v4(), adr, port);
+  if(resolved.empty()) {
     LOG_ERROR("Failed to resolve " << adr);
     return false;
   }
   //////////////////////////////////////////////////////////////////////////
 
   //boost::asio::ip::tcp::endpoint remote_endpoint(boost::asio::ip::address::from_string(addr.c_str()), port);
-  boost::asio::ip::tcp::endpoint remote_endpoint(*iterator);
+  boost::asio::ip::tcp::endpoint remote_endpoint(resolved.begin()->endpoint());
 
   sock_.open(remote_endpoint.protocol());
   if(bind_ip != "0.0.0.0" && bind_ip != "0" && bind_ip != "") {
-    boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::address::from_string(adr.c_str()), 0);
+    boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::make_address(adr.c_str()), 0);
     sock_.bind(local_endpoint);
   }
 
@@ -742,25 +739,23 @@ bool boosted_tcp_server<t_protocol_handler>::connect_async(const std::string& ad
 
   //////////////////////////////////////////////////////////////////////////
   boost::asio::ip::tcp::resolver resolver(io_service_);
-  boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), adr, port);
-  boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
-  boost::asio::ip::tcp::resolver::iterator end;
-  if(iterator == end) {
+  boost::asio::ip::tcp::resolver::results_type resolved = resolver.resolve(boost::asio::ip::tcp::v4(), adr, port);
+  if(resolved.empty()) {
     LOG_ERROR("Failed to resolve " << adr);
     return false;
   }
   //////////////////////////////////////////////////////////////////////////
-  boost::asio::ip::tcp::endpoint remote_endpoint(*iterator);
+  boost::asio::ip::tcp::endpoint remote_endpoint(resolved.begin()->endpoint());
 
   sock_.open(remote_endpoint.protocol());
   if(bind_ip != "0.0.0.0" && bind_ip != "0" && bind_ip != "") {
-    boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::address::from_string(adr.c_str()), 0);
+    boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::make_address(adr.c_str()), 0);
     sock_.bind(local_endpoint);
   }
 
-  boost::shared_ptr<boost::asio::deadline_timer> sh_deadline(new boost::asio::deadline_timer(io_service_));
+  boost::shared_ptr<boost::asio::steady_timer> sh_deadline(new boost::asio::steady_timer(io_service_));
   //start deadline
-  sh_deadline->expires_from_now(boost::posix_time::milliseconds(conn_timeout));
+  sh_deadline->expires_after(std::chrono::milliseconds(conn_timeout));
   sh_deadline->async_wait([=](const boost::system::error_code& error) {
     if(error != boost::asio::error::operation_aborted) {
       LOG_PRINT_L3("Failed to connect to " << adr << ':' << port << ", because of timeout (" << conn_timeout << ")");

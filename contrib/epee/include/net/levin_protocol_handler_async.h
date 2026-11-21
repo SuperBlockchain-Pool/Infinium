@@ -158,7 +158,7 @@ public:
     {
       if(m_con.start_outer_call())
       {
-        m_timer.expires_from_now(boost::posix_time::milliseconds(timeout));
+        m_timer.expires_after(std::chrono::milliseconds(timeout));
         m_timer.async_wait([&con, command, cb](const boost::system::error_code& ec)
         {
           if(ec == boost::asio::error::operation_aborted)
@@ -176,7 +176,7 @@ public:
     {}
     callback_t m_cb;
     async_protocol_handler& m_con;
-    boost::asio::deadline_timer m_timer;
+    boost::asio::steady_timer m_timer;
     bool m_timer_started;
     std::atomic<bool> m_cancel_timer_called;
     bool m_timer_cancelled;

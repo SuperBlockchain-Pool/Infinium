@@ -10,8 +10,8 @@
 //
 #include <cstdlib>
 #include <iostream>
-#include <boost/asio/deadline_timer.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/udp.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
@@ -20,7 +20,7 @@
 #include <chrono>
 #include "ntp.h"
 
-using boost::asio::deadline_timer;
+using boost::asio::steady_timer;
 using boost::asio::ip::udp;
 
 //----------------------------------------------------------------------
@@ -63,7 +63,7 @@ namespace
 class udp_blocking_client
 {
 public:
-  udp_blocking_client(const udp::endpoint& listen_endpoint, udp::socket& socket, boost::asio::io_service& io_service)
+  udp_blocking_client(const udp::endpoint& listen_endpoint, udp::socket& socket, boost::asio::io_context& io_service)
     : socket_(socket),
       io_service_(io_service),
       deadline_(io_service)
@@ -71,17 +71,17 @@ public:
     // No deadline is required until the first socket operation is started. We
     // set the deadline to positive infinity so that the actor takes no action
     // until a specific deadline is set.
-    deadline_.expires_at(boost::posix_time::pos_infin);
+    deadline_.expires_at(steady_timer::time_point::max());
 
     // Start the persistent actor that checks for deadline expiry.
     check_deadline();
   }
 
   std::size_t receive(const boost::asio::mutable_buffer& buffer,
-      boost::posix_time::time_duration timeout, boost::system::error_code& ec)
+      std::chrono::steady_clock::duration timeout, boost::system::error_code& ec)
   {
     // Set a deadline for the asynchronous operation.
-    deadline_.expires_from_now(timeout);
+    deadline_.expires_after(timeout);
 
     // Set up the variables that receive the result of the asynchronous
     // operation. The error code is set to would_block to signal that the
@@ -108,7 +108,7 @@ private:
     // Check whether the deadline has passed. We compare the deadline against
     // the current time since a new asynchronous operation may have moved the
     // deadline before this actor had a chance to run.
-    if (deadline_.expires_at() <= deadline_timer::traits_type::now())
+    if (deadline_.expiry() <= steady_timer::clock_type::now())
     {
       // The deadline has passed. The outstanding asynchronous operation needs
       // to be cancelled so that the blocked receive() function will return.
@@ -120,7 +120,7 @@ private:
 
       // There is no longer an active deadline. The expiry is set to positive
       // infinity so that the actor takes no action until a new deadline is set.
-      deadline_.expires_at(boost::posix_time::pos_infin);
+      deadline_.expires_at(steady_timer::time_point::max());
     }
 
     // Put the actor back to sleep.
@@ -136,9 +136,9 @@ private:
   }
 
 private:
-  boost::asio::io_service& io_service_;
+  boost::asio::io_context& io_service_;
   udp::socket& socket_;
-  deadline_timer deadline_;
+  steady_timer deadline_;
 };
 
 
@@ -184,10 +184,9 @@ namespace tools
   {
     try
     {
-      boost::asio::io_service io_service;
+      boost::asio::io_context io_service;
       boost::asio::ip::udp::resolver resolver(io_service);
-      boost::asio::ip::udp::resolver::query query(boost::asio::ip::udp::v4(), host_name, "ntp");
-      boost::asio::ip::udp::endpoint receiver_endpoint = *resolver.resolve(query);
+      boost::asio::ip::udp::endpoint receiver_endpoint = resolver.resolve(boost::asio::ip::udp::v4(), host_name, "ntp").begin()->endpoint();
       boost::asio::ip::udp::socket socket(io_service);
       socket.open(boost::asio::ip::udp::v4());
 
@@ -206,7 +205,7 @@ namespace tools
 
       udp_blocking_client ubc(sender_endpoint, socket, io_service);
       boost::system::error_code ec;
-      ubc.receive(boost::asio::buffer(&packet_received, sizeof packet_received), boost::posix_time::seconds(static_cast<long>(timeout_sec)), ec);
+      ubc.receive(boost::asio::buffer(&packet_received, sizeof packet_received), std::chrono::seconds(static_cast<long>(timeout_sec)), ec);
       if (ec)
       {
         LOG_PRINT_L3("NTP: get_ntp_time(" << host_name << "): boost error: " << ec.message());

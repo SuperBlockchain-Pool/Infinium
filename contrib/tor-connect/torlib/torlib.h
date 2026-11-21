@@ -59,9 +59,9 @@ private:
 	//string GetDataFromUrl(const string host, const int port, const string target);
 	string GetDataFromUrlAsync(const string host, const int port, const string target);
 
-	net::io_service io_service;
-	shared_ptr<net::io_service::work> work;
-	unique_ptr<net::deadline_timer> dtimer;
+	net::io_context io_service;
+	shared_ptr<net::executor_work_guard<net::io_context::executor_type>> work;
+	unique_ptr<net::steady_timer> dtimer;
 	unique_ptr<NetConnect> net_connect;
 	bool operation_completed = false;
 	bool error_last_operation = false;

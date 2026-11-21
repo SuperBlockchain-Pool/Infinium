@@ -45,7 +45,7 @@ class NetConnect
 	net::streambuf request;
 	net::streambuf response;
 
-	void ResolvedComplete(ConnectFunction connectFunc, tcp::resolver::iterator endpoint_iter, const sys::error_code& err);
+	void ResolvedComplete(ConnectFunction connectFunc, tcp::resolver::results_type endpoint_iter, const sys::error_code& err);
 	bool VerifyCertificate(bool preverified, ssl::verify_context& ctx);
 	
 	void ConnectComplete(ConnectFunction connectFunc, const sys::error_code& err);
@@ -71,7 +71,7 @@ class NetConnect
 	tuple<u32, u8, u16> ParsingHeader();
 	void HexDumpResponse();
 public:	
-	NetConnect(net::io_service& io_service, ssl::context& context);
+	NetConnect(net::io_context& io_service, ssl::context& context);
 	void Connect(const string& host, int port, ConnectFunction connectFunc);
 	void SendVersion(ConnectFunction connectFunc);
 	void Close();
