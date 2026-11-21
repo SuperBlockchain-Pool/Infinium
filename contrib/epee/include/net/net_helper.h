@@ -98,7 +98,7 @@ namespace net_utils
 			// No deadline is required until the first socket operation is started. We
 			// set the deadline to positive infinity so that the actor takes no action
 			// until a specific deadline is set.
-			m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
+			m_deadline.expires_at((boost::asio::steady_timer::time_point::max)());
 
 			// Start the persistent actor that checks for deadline expiry.
 			check_deadline();
@@ -181,7 +181,7 @@ namespace net_utils
 				if (!ec && m_socket.is_open())
 				{
 					m_connected = true;
-					m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
+					m_deadline.expires_at((boost::asio::steady_timer::time_point::max)());
 					return true;
 				}else
 				{
@@ -266,7 +266,7 @@ namespace net_utils
 					return false;
 				}else
 				{
-					m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
+					m_deadline.expires_at((boost::asio::steady_timer::time_point::max)());
 				}
 			}
 
@@ -324,7 +324,7 @@ namespace net_utils
 					return false;
 				}else
 				{
-					m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
+					m_deadline.expires_at((boost::asio::steady_timer::time_point::max)());
 				}
 			}
 
@@ -406,7 +406,7 @@ namespace net_utils
 				}else
 				{
                     LOG_PRINT_L4("READ ENDS: Success. bytes_tr: " << bytes_transfered);
-					m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
+					m_deadline.expires_at((boost::asio::steady_timer::time_point::max)());
 				}
 
 				/*if(!bytes_transfered)
@@ -479,7 +479,7 @@ namespace net_utils
 					return false;
 				}else
 				{
-					m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
+					m_deadline.expires_at((boost::asio::steady_timer::time_point::max)());
 				}
 
 				if(bytes_transfered != buff.size())
@@ -552,7 +552,7 @@ namespace net_utils
 
 				// There is no longer an active deadline. The expiry is set to positive
 				// infinity so that the actor takes no action until a new deadline is set.
-				m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
+				m_deadline.expires_at((boost::asio::steady_timer::time_point::max)());
 			}
 
 			// Put the actor back to sleep.
@@ -585,7 +585,7 @@ namespace net_utils
 			// No deadline is required until the first socket operation is started. We
 			// set the deadline to positive infinity so that the actor takes no action
 			// until a specific deadline is set.
-			m_send_deadline.expires_at(boost::asio::steady_timer::time_point::max());
+			m_send_deadline.expires_at((boost::asio::steady_timer::time_point::max)());
 
 			// Start the persistent actor that checks for deadline expiry.
 			check_send_deadline();
@@ -639,7 +639,7 @@ namespace net_utils
 					return false;
 				}else
 				{
-					m_send_deadline.expires_at(boost::asio::steady_timer::time_point::max());
+					m_send_deadline.expires_at((boost::asio::steady_timer::time_point::max)());
 				}
 			}
 
@@ -677,7 +677,7 @@ namespace net_utils
 
 				// There is no longer an active deadline. The expiry is set to positive
 				// infinity so that the actor takes no action until a new deadline is set.
-				m_send_deadline.expires_at(boost::asio::steady_timer::time_point::max());
+				m_send_deadline.expires_at((boost::asio::steady_timer::time_point::max)());
 			}
 
 			// Put the actor back to sleep.

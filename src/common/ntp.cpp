@@ -71,7 +71,7 @@ public:
     // No deadline is required until the first socket operation is started. We
     // set the deadline to positive infinity so that the actor takes no action
     // until a specific deadline is set.
-    deadline_.expires_at(steady_timer::time_point::max());
+    deadline_.expires_at((steady_timer::time_point::max)());
 
     // Start the persistent actor that checks for deadline expiry.
     check_deadline();
@@ -120,7 +120,7 @@ private:
 
       // There is no longer an active deadline. The expiry is set to positive
       // infinity so that the actor takes no action until a new deadline is set.
-      deadline_.expires_at(steady_timer::time_point::max());
+      deadline_.expires_at((steady_timer::time_point::max)());
     }
 
     // Put the actor back to sleep.
