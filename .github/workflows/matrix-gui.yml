@@ -91,7 +91,7 @@ jobs:
           
       # Retrieve Ccache   
       - name: Retrieve ccache
-        uses: actions/cache@v7
+        uses: actions/cache@v6.1.0
         with:
           path: .ccache
           key: ccache-${{ matrix.label }}     
@@ -315,7 +315,7 @@ jobs:
         
       # Retrieve Ccache     
       - name: Retrieve ccache
-        uses: actions/cache@v7
+        uses: actions/cache@v6.1.0
         with:
           path: .ccache
           key: ccache-${{ matrix.label }}     
@@ -443,7 +443,7 @@ jobs:
 
       # Retrieve ccache    
       - name: Retrieve ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6.1.0
         with:
           path: .ccache
           key: ccache-osx
@@ -536,7 +536,7 @@ jobs:
           modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
 
       # Install boost
-      - name: Install Boost 1.86.0
+      - name: Install Boost 1.92.0
         run: |
           $link = "https://archives.boost.io/release/1.92.0/binaries/boost_1_92_0-msvc-14.2-64.exe"
           $path = "C:\boost.exe"
