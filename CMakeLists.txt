@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 
+# CMake >= 3.30 avisa de que el modulo FindBoost esta obsoleto (CMP0167) y, con Boost recientes,
+# de que "New Boost version may have incorrect or missing dependencies".
+# Seguimos usando FindBoost (OLD). CMAKE_POLICY_DEFAULT_* tambien cubre los subdirectorios
+# (p.ej. contrib/tor-connect) que llaman a su propio cmake_minimum_required.
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 OLD)
+  set(CMAKE_POLICY_DEFAULT_CMP0167 OLD)
+endif()
+set(Boost_NO_WARN_NEW_VERSIONS ON)
+
 PROJECT(infinium)
 
 
