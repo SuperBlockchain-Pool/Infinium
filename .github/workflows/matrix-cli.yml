@@ -34,7 +34,7 @@ jobs:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
       LABEL: ${{ matrix.label }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Fetch Dependencies
       - name: Dependencies
@@ -46,10 +46,10 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |
-          curl -OL https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.bz2
-          tar -xjf boost_1_86_0.tar.bz2
-          cd boost_1_86_0
-          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
+          curl -OL https://archives.boost.io/release/1.92.0/source/boost_1_92_0.tar.bz2
+          tar -xjf boost_1_92_0.tar.bz2
+          cd boost_1_92_0
+          ./bootstrap.sh --with-libraries=filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
 
@@ -71,7 +71,7 @@ jobs:
 
       # Retrieve Ccache    
       - name: Retrieve ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .ccache
           key: ccache-${{ matrix.label }}     
@@ -83,7 +83,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake  -D BOOST_ROOT=/home/runner/work/Infinium/Infinium/boost_1_86_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Infinium/Infinium/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake  -D BOOST_ROOT=/home/runner/work/Infinium/Infinium/boost_1_92_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Infinium/Infinium/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
       
       # Build for linux
       - name: Build
@@ -150,7 +150,7 @@ jobs:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
       LABEL: ${{ matrix.label }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Fetch Dependencies
       - name: Dependencies
@@ -162,10 +162,10 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |  
-          curl -OL https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.bz2
-          tar -xjf boost_1_86_0.tar.bz2
-          cd boost_1_86_0
-          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
+          curl -OL https://archives.boost.io/release/1.92.0/source/boost_1_92_0.tar.bz2
+          tar -xjf boost_1_92_0.tar.bz2
+          cd boost_1_92_0
+          ./bootstrap.sh --with-libraries=filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
 
@@ -187,7 +187,7 @@ jobs:
 
       # Retrieve ccache
       - name: Retrieve ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .ccache
           key: ccache-${{ matrix.label }}     
@@ -199,7 +199,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake  -D BOOST_ROOT=/home/runner/work/Infinium/Infinium/boost_1_86_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Infinium/Infinium/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D BOOST_ROOT=/home/runner/work/Infinium/Infinium/boost_1_92_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Infinium/Infinium/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
       
       # Build for linux
       - name: Build
@@ -252,7 +252,7 @@ jobs:
       CXX: /usr/local/opt/llvm@15/bin/clang++
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Fetch Dependencies
       - name: Dependencies
@@ -262,16 +262,16 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |    
-          curl -OL https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.bz2
-          tar -xjf boost_1_86_0.tar.bz2
-          cd boost_1_86_0
+          curl -OL https://archives.boost.io/release/1.92.0/source/boost_1_92_0.tar.bz2
+          tar -xjf boost_1_92_0.tar.bz2
+          cd boost_1_92_0
           ./bootstrap.sh 
           ./b2 
           cd ..
 
       # Retrieve ccache    
       - name: Retrieve ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .ccache
           key: ccache-osx    
@@ -280,7 +280,7 @@ jobs:
       - name: Configure
         run: |
           mkdir build && cd build
-          cmake -D CMAKE_POLICY_VERSION_MINIMUM=3.5 -D BOOST_ROOT=/Users/runner/work/Infinium/Infinium/boost_1_86_0 -D BOOST_LIBRARYDIR=/Users/runner/work/Infinium/Infinium/boost_1_86_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D BUILD_GUI=OFF -D CMAKE_BUILD_TYPE=Release  -D BUILD_TESTS=OFF ..
+          cmake -D CMAKE_POLICY_VERSION_MINIMUM=3.5 -D BOOST_ROOT=/Users/runner/work/Infinium/Infinium/boost_1_92_0 -D BOOST_LIBRARYDIR=/Users/runner/work/Infinium/Infinium/boost_1_92_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D BUILD_GUI=OFF -D CMAKE_BUILD_TYPE=Release  -D BUILD_TESTS=OFF ..
       
       # Build for macOS
       - name: Build
@@ -328,10 +328,10 @@ jobs:
     name: Windows
     runs-on: windows-latest
     env:
-      MSBUILD_PATH: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin"
+      MSBUILD_PATH: "C:/Program Files/Microsoft Visual Studio/18/Enterprise/MSBuild/Current/Bin"
       LABEL: windows
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Install OpenSSH
       - name: Install OpenSSH
@@ -340,25 +340,25 @@ jobs:
       # Install boost
       - name: Install Boost 1.86.0
         run: |
-          $link = "https://archives.boost.io/release/1.86.0/binaries/boost_1_86_0-msvc-14.2-64.exe"
+          $link = "https://archives.boost.io/release/1.92.0/binaries/boost_1_92_0-msvc-14.2-64.exe"
           $path = "C:\boost.exe"
           [Net.WebClient]::new().DownloadFile($link, $path)
-          Start-Process C:\boost.exe -ArgumentList "/DIR=C:\local\boost_1_86_0","/VERYSILENT" -Wait
-          Get-ChildItem C:\local\boost_1_86_0
+          Start-Process C:\boost.exe -ArgumentList "/DIR=C:\local\boost_1_92_0","/VERYSILENT" -Wait
+          Get-ChildItem C:\local\boost_1_92_0
 
       # Configure project with cmake
       - name: Configure
         run: |
           mkdir build
           cd build
-          cmake -G "Visual Studio 17 2022" -A x64 -T v142,host=x64 .. -DBUILD_GUI=OFF -D BOOST_ROOT=C:/local/boost_1_86_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_86_0/lib64-msvc-14.2"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
+          cmake -G "Visual Studio 18 2026" -A x64 -T v142,host=x64 .. -DBUILD_GUI=OFF -D BOOST_ROOT=C:/local/boost_1_92_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_92_0/lib64-msvc-14.2"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
       
       # Build for Windows
       - name: Build
         run: |
           $env:PATH = "$env:PATH;$env:MSBUILD_PATH"
           cd build
-          MSBuild infinium.sln /p:Configuration=Release /t:Build
+          MSBuild infinium.slnx /p:Configuration=Release /t:Build
       
       # Prepare for deploy
       - name: Prepare for Deploy
