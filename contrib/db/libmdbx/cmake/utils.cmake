@@ -138,7 +138,7 @@ macro(fetch_version name version_file)
 ##   endif()
 
   if(NOT ${name}_GIT_VERSION OR NOT ${name}_GIT_TIMESTAMP OR NOT ${name}_GIT_REVISION)
-    message(WARNING "Unable to retrive ${name} version from git.")
+    message(STATUS "${name} version is not taken from git (git detection is disabled in this vendored copy), using the VERSION file.")
     set(${name}_GIT_VERSION "0;0;0;0")
     set(${name}_GIT_TIMESTAMP "")
     set(${name}_GIT_REVISION 0)
